@@ -10,3 +10,4 @@ class UserService:
 if __name__ == "__main__":
     service = UserService()
     print(service.get_user(101))
+    
