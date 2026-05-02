@@ -1,29 +1,37 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 import requests
 
 app = Flask(__name__)
 
-# USERS
-@app.route('/users', methods=['GET'])
+USER_SERVICE = "http://127.0.0.1:5002"
+PRODUCT_SERVICE = "http://127.0.0.1:5001"
+
+
+@app.route("/")
+def home():
+    return jsonify({"gateway": "running", "status": "ok"})
+
+
+# ---------- USER ROUTE ----------
+@app.route("/users", methods=["GET"])
 def get_users():
-    res = requests.get("http://localhost:5000/users")
-    return jsonify(res.json())
+    try:
+        res = requests.get(f"{USER_SERVICE}/users")
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/users', methods=['POST'])
-def add_user():
-    res = requests.post("http://localhost:5000/users", json=request.json)
-    return jsonify(res.json())
 
-# PRODUCTS
-@app.route('/products', methods=['GET'])
+# ---------- PRODUCT ROUTE ----------
+@app.route("/products", methods=["GET"])
 def get_products():
-    res = requests.get("http://localhost:5001/products")
-    return jsonify(res.json())
+    try:
+        res = requests.get(f"{PRODUCT_SERVICE}/products")
+        return jsonify(res.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/products', methods=['POST'])
-def add_product():
-    res = requests.post("http://localhost:5001/products", json=request.json)
-    return jsonify(res.json())
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002)
+if __name__ == "__main__":
+    print("API GATEWAY RUNNING 🚀")
+    app.run(host="0.0.0.0", port=5000, debug=True)
